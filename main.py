@@ -26,7 +26,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_smooth = False  # 默认不开起谱光滑
 
 
-    def init_special_ui(self):1
+    def init_special_ui(self):
         """特殊控件初始化"""
         vbox = QtWidgets.QVBoxLayout(self.groupBox_2)
         self.graph_widget = Graph(self.groupBox_2)  # 图像控件1
