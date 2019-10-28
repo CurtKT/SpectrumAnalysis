@@ -18,6 +18,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def init_flag(self):
         """标识位初始化"""
+        print("1f")
         pass
 
     def init_special_ui(self):
