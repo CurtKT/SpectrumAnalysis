@@ -29,7 +29,7 @@ class Graph(QWidget):
 
     def init_items(self, x, y):
         """初始化部件"""
-        self.plot_data = self.pw.plot(x, y, pen="b")
+        self.plot_data = self.pw.plot(x, y, symbolSize=4, symbolPen='w', pen="b")
         self.delay = 0
         self.qtime = QtCore.QTimer()
         self.qtime.timeout.connect(self.update_textBrowser)
@@ -37,6 +37,10 @@ class Graph(QWidget):
         pen = pg.mkPen(color)
         color2 = pg.mkColor(255, 150, 150, 150)
         pen2 = pg.mkPen(color2)
+        pg.plot()
+
+    def smooth(self, x, y):
+        self.plot_data2 = self.pw.plot(x, y, symbolSize=4, symbolPen='r', symbolBrush='r', pen="r")
 
 
     def run(self):
@@ -85,7 +89,6 @@ class Graph(QWidget):
         self.region.setZValue(10)
         self.minX, self.maxX = self.region.getRegion()
         self.p.parent().parent().graph_widget2.pw.setXRange(self.minX, self.maxX, padding=0)
-        print(self.delay)
 
     def update_textBrowser(self):
         _translate = QtCore.QCoreApplication.translate
@@ -117,10 +120,7 @@ class Graph(QWidget):
 
     def update_graph(self, list):
         """刷新图像"""
-        x = range(1000)
-        y = range(1000)
         self.plot_data.setData(x, y)
-        print(100)
 
 
 class Graph2(QWidget):
@@ -146,7 +146,10 @@ class Graph2(QWidget):
 
     def init_items(self, x, y):
         """初始化部件"""
-        self.plot_data = self.pw.plot(x, y, pen="b")
+        self.plot_data = self.pw.plot(x, y, symbolSize=4, symbolPen='w', pen="b")
+
+    def smooth(self, x, y):
+        self.plot_data2 = self.pw.plot(x, y, symbolPen='r', symbolSize=4, symbolBrush='r', pen="r")
 
     def run(self):
         """鼠标事件控制游标"""
@@ -203,7 +206,6 @@ class Graph2(QWidget):
         """刷新图像"""
         try:
             x = [(i[0]+1-self.p.parent().parent().sampling_numble/2)/self.p.parent().parent().sampling_race * 1000/self.p.parent().parent().ratio for i in list[len(list)-1]]
-            print("x",x)
             k1 = float(self.p.parent().parent().K1)
             k2 = float(self.p.parent().parent().K2)
             k3 = float(self.p.parent().parent().K3)

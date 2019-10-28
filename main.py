@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QMessageBox, QMainWindow, QApplication, QAbstractIte
 from graph import Graph, Graph2
 from PyQt5 import QtCore, QtWidgets
 import numpy as np
+import smoothing
+import untitled_sub
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -18,11 +20,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def init_flag(self):
         """标识位初始化"""
-        print("1f")
-        print("2f")
-        pass
+        self.yrange = 250000  # y轴量程
+        self.smooth_type = "滑动平均法"  # 平滑方法
+        self.pram_m = 3  # 参数m
+        self.is_smooth = False  # 默认不开起谱光滑
 
-    def init_special_ui(self):
+
+    def init_special_ui(self):1
         """特殊控件初始化"""
         vbox = QtWidgets.QVBoxLayout(self.groupBox_2)
         self.graph_widget = Graph(self.groupBox_2)  # 图像控件1
@@ -30,12 +34,59 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         vbox = QtWidgets.QVBoxLayout(self.groupBox)
         self.graph_widget2 = Graph2(self.groupBox)  # 图像控件2
         vbox.addWidget(self.graph_widget2)
-        pass
+        self.make_smooth = smoothing.Smooth  # 平滑处理方法对象
 
     def init_signal(self):
         """建立信号与槽链接"""
         self.action.triggered.connect(self.file_read)
-        pass
+        self.action_3.triggered.connect(self.sub_window)
+        self.pushButton_2.clicked.connect(self.set_is_smooth)
+
+    def set_is_smooth(self):
+        """点击谱光滑"""
+        self.is_smooth = True if self.is_smooth is False else False
+        if self.is_smooth:
+            self.smooth_y = self.y
+            if self.smooth_type == "滑动平均法":
+                self.smooth_y = self.make_smooth.mean_shift(self, self.y)
+            elif self.smooth_type == "重心法":
+                self.smooth_y = self.makesmooth.focus(self, self.y)
+            try:
+                print(self.graph_widget.plot_data2)
+                self.graph_widget.plot_data2.setData(self.x, self.smooth_y)
+                self.graph_widget2.plot_data2.setData(self.x, self.smooth_y)
+            except:
+                self.graph_widget.smooth(self.x, self.smooth_y)
+                self.graph_widget2.smooth(self.x, self.smooth_y)
+        else:
+            self.graph_widget.plot_data2.setData([0], [0])
+            self.graph_widget2.plot_data2.setData([0], [0])
+
+    def sub_window(self):
+        """建立子窗口"""
+        Dialog = QtWidgets.QDialog(self)
+        self.ui = untitled_sub.Ui_Dialog()
+        self.ui.setupUi(Dialog)
+        Dialog.show()
+        self.ui.comboBox.setCurrentText(self.smooth_type)
+        self.ui.comboBox_2.setCurrentText(str(self.pram_m))
+        self.ui.buttonBox.accepted.connect(self.sub_window_trans)
+
+    def sub_window_trans(self):
+        """子窗口传参"""
+        self.smooth_type = self.ui.comboBox.currentText()
+        self.pram_m = int(self.ui.comboBox_2.currentText())
+
+    def keyPressEvent(self, event):
+        """设立快捷键"""
+        if (event.key() == 16777235):
+            self.yrange = self.yrange*1.3
+            self.graph_widget.pw.setYRange(0, self.yrange, 0)
+            self.graph_widget2.pw.setYRange(0, self.yrange, 0)
+        elif (event.key() == 16777237):
+            self.yrange = self.yrange/1.3
+            self.graph_widget.pw.setYRange(0, self.yrange, 0)
+            self.graph_widget2.pw.setYRange(0, self.yrange, 0)
 
     def file_read(self):
         """文件读取"""
@@ -49,11 +100,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.x = np.array(text_list[0::3])
                 self.y = np.array(text_list[1::3])
                 # self.y[950:] = self.y[950:]+50
-        self.graph_widget.init_items(self.x, self.y+10)
-        self.graph_widget2.init_items(self.x, self.y+10)
-        self.graph_widget.run()
-        self.graph_widget2.run()
-
+            self.graph_widget.init_items(self.x, self.y)
+            self.graph_widget2.init_items(self.x, self.y)
+            self.graph_widget.run()
+            self.graph_widget2.run()
 
 
 if __name__ == '__main__':
