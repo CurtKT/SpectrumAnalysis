@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'untitled.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -106,14 +108,3 @@ class Ui_MainWindow(object):
         self.action_2.setText(_translate("MainWindow", "保存"))
         self.action_3.setText(_translate("MainWindow", "普光滑设置"))
         self.action_4.setText(_translate("MainWindow", "寻峰设置"))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
-
