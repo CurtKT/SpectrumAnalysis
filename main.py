@@ -21,8 +21,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def init_flag(self):
         """标识位初始化"""
         self.yrange = 250000  # y轴量程
-        self.smooth_type = "滑动平均法"  # 平滑方法
+        self.smooth_type = "滑动平均"  # 平滑方法
         self.pram_m = 3  # 参数m
+        self.pram_n = 2  # 参数n
         self.is_smooth = False  # 默认不开起谱光滑
 
 
@@ -47,12 +48,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_smooth = True if self.is_smooth is False else False
         if self.is_smooth:
             self.smooth_y = self.y
-            if self.smooth_type == "滑动平均法":
+            if self.smooth_type == "滑动平均":
                 self.smooth_y = self.make_smooth.mean_shift(self, self.y)
             elif self.smooth_type == "重心法":
-                self.smooth_y = self.makesmooth.focus(self, self.y)
+                self.smooth_y = self.make_smooth.focus(self, self.y)
             try:
-                print(self.graph_widget.plot_data2)
+                print(self.graph_widget.plot_data2)  # 增加异常判断
                 self.graph_widget.plot_data2.setData(self.x, self.smooth_y)
                 self.graph_widget2.plot_data2.setData(self.x, self.smooth_y)
             except:
@@ -68,6 +69,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.ui = untitled_sub.Ui_Dialog()
         self.ui.setupUi(Dialog)
         Dialog.show()
+        self.ui.comboBox.currentTextChanged.connect(self.sub_window_pram_choose)
         self.ui.comboBox.setCurrentText(self.smooth_type)
         self.ui.comboBox_2.setCurrentText(str(self.pram_m))
         self.ui.buttonBox.accepted.connect(self.sub_window_trans)
@@ -76,7 +78,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """子窗口传参"""
         self.smooth_type = self.ui.comboBox.currentText()
         self.pram_m = int(self.ui.comboBox_2.currentText())
+        self.pram_n = int(self.ui.comboBox_3.currentText())
 
+    def sub_window_pram_choose(self):
+        """子窗口参数选择选项"""
+        if self.ui.comboBox.currentText() == "滑动平均":
+            self.ui.groupBox_3.setEnabled(False)
+        if self.ui.comboBox.currentText() == "重心法":
+            self.ui.groupBox_3.setEnabled(False)
+        if self.ui.comboBox.currentText() == "最小二乘法":
+            self.ui.groupBox_3.setEnabled(True)
+            self.ui.comboBox_2.setCurrentText("5")
     def keyPressEvent(self, event):
         """设立快捷键"""
         if (event.key() == 16777235):
