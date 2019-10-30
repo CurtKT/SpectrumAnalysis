@@ -29,7 +29,7 @@ class Graph(QWidget):
 
     def init_items(self, x, y):
         """初始化部件"""
-        self.plot_data = self.pw.plot(x, y, symbolSize=4, symbolPen='w', pen="b")
+        self.plot_data = self.pw.plot(x, y, symbolSize=5, symbolPen='w', pen="b")
         self.delay = 0
         self.qtime = QtCore.QTimer()
         self.qtime.timeout.connect(self.update_textBrowser)
@@ -40,7 +40,7 @@ class Graph(QWidget):
         pg.plot()
 
     def smooth(self, x, y):
-        self.plot_data2 = self.pw.plot(x, y, symbolSize=4, symbolPen='r', symbolBrush='r', pen="r")
+        self.plot_data2 = self.pw.plot(x, y, symbolSize=5, symbolPen='r', symbolBrush='r', pen="r")
 
 
     def run(self):
@@ -57,6 +57,7 @@ class Graph(QWidget):
         self.qtime.start(100)
         self.vb = pg.ViewBox()
         self.pw.addItem(self.vb)
+        # pg.plot().
 
     def run2(self):
         """鼠标事件控制游标"""
@@ -146,10 +147,10 @@ class Graph2(QWidget):
 
     def init_items(self, x, y):
         """初始化部件"""
-        self.plot_data = self.pw.plot(x, y, symbolSize=4, symbolPen='w', pen="b")
+        self.plot_data = self.pw.plot(x, y, symbolSize=5, symbolPen='w', pen="b")
 
     def smooth(self, x, y):
-        self.plot_data2 = self.pw.plot(x, y, symbolPen='r', symbolSize=4, symbolBrush='r', pen="r")
+        self.plot_data2 = self.pw.plot(x, y, symbolPen='r', symbolSize=5, symbolBrush='r', pen="r")
 
     def run(self):
         """鼠标事件控制游标"""
@@ -171,36 +172,10 @@ class Graph2(QWidget):
         if self.pw.sceneBoundingRect().contains(pos):
             mousePoint = self.vb.mapSceneToView(pos)
             try:
-                k1 = float(self.p.parent().parent().K1)
-                k2 = float(self.p.parent().parent().K2)
-                k3 = float(self.p.parent().parent().K3)
-                k4 = float(self.p.parent().parent().K4)
-                bac = float(self.p.parent().parent().bac)
-                data1 = self.p.parent().parent().thread_rec.CH1_list
-                x = mousePoint.x() * 50*self.p.parent().parent().sampling_race / 1000*self.p.parent().parent().ratio
-                print("movex", x)
-                y = mousePoint.y() * -50
-                if x <= self.p.parent().parent().sampling_numble/2 and x >= self.p.parent().parent().sampling_numble/-2:
-                    _translate = QtCore.QCoreApplication.translate
-                    row = int(int(x) + self.p.parent().parent().sampling_numble / 2)-1
-                    self.p.parent().parent().label_36.setText("%.2f%s" % ((mousePoint.x() * 50), self.p.parent().parent().doubleSpinBox_2.suffix()))
-                    self.p.parent().parent().label_37.setText("%dmV" % (data1[row][1]*k1+k2*bac+k3+k4))
-                else:
-                    self.p.parent().parent().label_36.setText("%.2f" % (mousePoint.x() * 50))
-                    self.p.parent().parent().label_37.setText("None")
-
-            except:
+                self.p.parent().parent().label.setText("道:%d计数:%d" % (int(mousePoint.x()*50), self.p.parent().parent().y[int(mousePoint.x()*50)]))
+            except Exception as result:
                 pass
-            self.vLine.setPos(mousePoint.x() * 50)
-            try:
-                if row > 3:  # 根据鼠标定位到行
-                    self.p.parent().parent().tableWidget.verticalScrollBar().setSliderPosition(row-3)
-                else:
-                    self.p.parent().parent().tableWidget.verticalScrollBar().setSliderPosition(row)
-                # 选中
-                self.p.parent().parent().tableWidget.selectRow(row)
-            except:
-                pass
+            self.vLine.setPos(mousePoint.x()*50)
 
     def update_graph(self, list):
         """刷新图像"""
